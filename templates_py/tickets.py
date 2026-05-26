@@ -1,0 +1,132 @@
+HTML = '''<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tickets | Soporte IT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="page-app">
+    <main class="shell">
+        <header class="topbar">
+            <div>
+                <h1>Listado de tickets</h1>
+                <p class="muted">Consulta, filtra y actualiza incidencias.</p>
+            </div>
+            <nav class="topbar-actions">
+                <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a class="btn btn-primary" href="{{ url_for('crear_ticket') }}">Nuevo ticket</a>
+                <a class="btn btn-danger" href="{{ url_for('logout') }}">Cerrar sesion</a>
+            </nav>
+        </header>
+
+        <section class="panel">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {% if category == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="toolbar">
+                <input id="searchInput" type="text" placeholder="Buscar por titulo, descripcion o creador">
+                <select id="stateFilter">
+                    <option value="">Todos los estados</option>
+                    {% for estado in estados %}
+                        <option value="{{ estado }}">{{ estado }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            {% if tickets %}
+                <div class="table-wrap">
+                    <table id="ticketsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Titulo</th>
+                                <th>Descripcion</th>
+                                <th>Estado</th>
+                                <th>Prioridad</th>
+                                <th>Creado por</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ticket in tickets %}
+                                <tr data-title="{{ ticket['titulo']|lower }}" data-desc="{{ ticket['descripcion']|lower }}" data-owner="{{ ticket['creado_por']|lower }}" data-state="{{ ticket['estado'] }}">
+                                    <td>#{{ ticket["id"] }}</td>
+                                    <td>{{ ticket["titulo"] }}</td>
+                                    <td>{{ ticket["descripcion"] }}</td>
+                                    <td>
+                                        <span class="status status-{{ ticket['estado']|lower|replace(' ', '-') }}">
+                                            {{ ticket["estado"] }}
+                                        </span>
+                                    </td>
+                                    <td>{{ ticket["prioridad"] }}</td>
+                                    <td>{{ ticket["creado_por"] }}</td>
+                                    <td>{{ ticket["fecha_creacion"] }}</td>
+                                    <td>
+                                        <div class="row-actions">
+                                            <form method="POST" action="{{ url_for('cambiar_estado', ticket_id=ticket['id']) }}" class="inline-form">
+                                                <select name="estado" aria-label="Cambiar estado ticket {{ ticket['id'] }}">
+                                                    {% for estado in estados %}
+                                                        <option value="{{ estado }}" {% if estado == ticket["estado"] %}selected{% endif %}>{{ estado }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <button class="btn btn-small" type="submit">Guardar</button>
+                                            </form>
+
+                                            <form method="POST" action="{{ url_for('eliminar_ticket', ticket_id=ticket['id']) }}" class="inline-form" onsubmit="return confirm('Eliminar ticket #{{ ticket['id'] }}?');">
+                                                <button class="btn btn-small btn-danger" type="submit">Eliminar</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="empty-state">No hay tickets para mostrar.</p>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        const searchInput = document.getElementById("searchInput");
+        const stateFilter = document.getElementById("stateFilter");
+        const table = document.getElementById("ticketsTable");
+
+        function applyFilters() {
+            if (!table) return;
+
+            const query = searchInput.value.trim().toLowerCase();
+            const selectedState = stateFilter.value;
+            const rows = table.querySelectorAll("tbody tr");
+
+            rows.forEach((row) => {
+                const title = row.dataset.title || "";
+                const desc = row.dataset.desc || "";
+                const owner = row.dataset.owner || "";
+                const state = row.dataset.state || "";
+
+                const matchText = title.includes(query) || desc.includes(query) || owner.includes(query);
+                const matchState = !selectedState || state === selectedState;
+
+                row.style.display = matchText && matchState ? "" : "none";
+            });
+        }
+
+        if (searchInput && stateFilter) {
+            searchInput.addEventListener("input", applyFilters);
+            stateFilter.addEventListener("change", applyFilters);
+        }
+    </script>
+</body>
+</html>
+'''

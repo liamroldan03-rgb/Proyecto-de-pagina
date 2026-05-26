@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Soporte IT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="page-auth">
+    <main class="shell">
+        <section class="panel auth-panel">
+            <h1>Iniciar sesion</h1>
+            <p class="muted">Registrese para ingresar a ver los tickets.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {% if category == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% if error %}
+                <div class="alert alert-error">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" class="form-grid">
+                <label for="usuario">Usuario</label>
+                <input id="usuario" type="text" name="usuario" placeholder="Tu usuario" required>
+
+                <label for="contraseña">Contraseña</label>
+                <input id="contraseña" type="password" name="contraseña" placeholder="Tu contraseña" required>
+
+                <button class="btn btn-primary" type="submit">Ingresar</button>
+            </form>
+
+            <a class="link-inline" href="{{ url_for('index') }}">Volver al inicio</a>
+        </section>
+    </main>
+
+    <script>
+        (function () {
+            const body = document.body;
+            let rafId = null;
+            let targetX = 0;
+            let targetY = 0;
+
+            function applyShift() {
+                body.style.setProperty("--shift-x", `${targetX}px`);
+                body.style.setProperty("--shift-y", `${targetY}px`);
+                rafId = null;
+            }
+
+            function queueShift(clientX, clientY) {
+                const offsetX = ((clientX / window.innerWidth) - 0.5) * 26;
+                const offsetY = ((clientY / window.innerHeight) - 0.5) * 26;
+                targetX = Math.max(-20, Math.min(20, offsetX));
+                targetY = Math.max(-20, Math.min(20, offsetY));
+
+                if (!rafId) {
+                    rafId = window.requestAnimationFrame(applyShift);
+                }
+            }
+
+            window.addEventListener("pointermove", (event) => {
+                queueShift(event.clientX, event.clientY);
+            }, { passive: true });
+
+            window.addEventListener("touchmove", (event) => {
+                if (event.touches && event.touches[0]) {
+                    queueShift(event.touches[0].clientX, event.touches[0].clientY);
+                }
+            }, { passive: true });
+        })();
+    </script>
+    <p class="auth-footer">
+    ¿No tenés cuenta?
+    <a href="{{ url_for('registro') }}">Registrate</a>
+</p>
+</body>
+</html>

@@ -1,0 +1,41 @@
+HTML = '''<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Soporte IT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="page-home">
+    <main class="shell shell-home">
+        <section class="hero">
+            <p class="badge">Sistema interno</p>
+            <h1>Centro de Soporte IT</h1>
+            <p class="lead">
+                Gestiona tickets, sigue incidentes y mantiene al equipo alineado en un mismo panel.
+            </p>
+
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="{{ url_for('login') }}">Iniciar sesion</a>
+                <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">Ir al dashboard</a>
+            </div>
+
+            <div class="hero-grid">
+                <article class="info-card">
+                    <h2>Registro rapido</h2>
+                    <p>Crea incidencias con prioridad y descripcion detallada en segundos.</p>
+                </article>
+                <article class="info-card">
+                    <h2>Seguimiento claro</h2>
+                    <p>Actualiza estados entre abierto, en progreso y cerrado de forma ordenada.</p>
+                </article>
+                <article class="info-card">
+                    <h2>Vista centralizada</h2>
+                    <p>Dashboard con resumen para saber que esta pasando en todo momento.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
+'''

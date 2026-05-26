@@ -1,0 +1,54 @@
+HTML = '''<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Ticket | Soporte IT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="page-app">
+    <main class="shell">
+        <header class="topbar">
+            <div>
+                <h1>Crear ticket</h1>
+                <p class="muted">Registra una nueva incidencia para el equipo.</p>
+            </div>
+            <nav class="topbar-actions">
+                <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a class="btn btn-ghost" href="{{ url_for('tickets') }}">Listado</a>
+                <a class="btn btn-danger" href="{{ url_for('logout') }}">Cerrar sesion</a>
+            </nav>
+        </header>
+
+        <section class="panel">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {% if category == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" class="form-grid">
+                <label for="titulo">Titulo</label>
+                <input id="titulo" type="text" name="titulo" placeholder="Ej: No funciona impresora de recepcion" required>
+
+                <label for="descripcion">Descripcion</label>
+                <textarea id="descripcion" name="descripcion" rows="6" placeholder="Describe el problema con detalle" required></textarea>
+
+                <label for="prioridad">Prioridad</label>
+                <select id="prioridad" name="prioridad" required>
+                    {% for prioridad in prioridades %}
+                        <option value="{{ prioridad }}">{{ prioridad }}</option>
+                    {% endfor %}
+                </select>
+
+                <button class="btn btn-primary" type="submit">Guardar ticket</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
+'''
